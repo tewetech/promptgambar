@@ -17,16 +17,19 @@
         /* === Variabel dan Gaya Dasar === */
         /* ================================================= */
         :root {
-            --bg-primary: #f0f0f5; /* Latar belakang utama yang terang */
-            --bg-card: #ffffff; /* Latar belakang kartu yang solid putih */
-            --text-main: #333333; /* Warna teks utama yang gelap */
-            --text-subtle: #666666; /* Warna teks sekunder/samar */
-            --accent-1: #08978b; /* Warna aksen utama (hijau tosca) */
-            --accent-2: #ff6932; /* Warna aksen kedua (oranye) */
-            --border-color: rgba(0, 0, 0, 0.1); /* Warna border elemen */
+            /* Variabel untuk Mode Gelap (Dark Mode) */
+            --bg-primary: #121212; /* Latar belakang gelap */
+            --bg-card: rgba(255, 255, 255, 0.05); /* Latar belakang kartu transparan untuk efek glass gelap */
+            --text-main: #c9c9c9; /* Warna teks utama terang */
+            --text-subtle: #a0a0a0; /* Warna teks sekunder/samar terang */
+            --accent-1: #1a8075; /* Warna aksen utama (hijau tosca) yang lebih terang */
+            --accent-2: rgb(66, 66, 66); /* Warna aksen kedua (oranye) yang lebih terang */
+            --border-color: rgba(255, 255, 255, 0.1); /* Warna border transparan gelap */
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-heavy: rgba(0, 0, 0, 0.4);
+
+            /* Variabel tambahan dan properti dasar */
             --card-br: 12px; /* Radius border untuk kartu */
-            --shadow-light: rgba(0, 0, 0, 0.1);
-            --shadow-heavy: rgba(0, 0, 0, 0.2);
             --transition-speed: 0.5s;
         }
 
@@ -51,7 +54,7 @@
             transition: background-color var(--transition-speed), color var(--transition-speed);
         }
 
-        /* Latar belakang dengan gradasi dan efek noise */
+        /* Efek latar belakang untuk mode gelap */
         body::before {
             content: '';
             position: fixed;
@@ -59,12 +62,13 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle 800px at 15% 15%, #e0e0e5 0%, #f0f0f5 40%, transparent 60%) no-repeat,
-                        radial-gradient(circle 600px at 85% 20%, #d0d0d5 0%, transparent 60%) no-repeat,
-                        radial-gradient(circle 700px at 40% 85%, #c0c0c5 0%, transparent 60%) no-repeat;
-            opacity: 0.5;
+            background: radial-gradient(circle 800px at 15% 15%, #222 0%, #121212 40%, transparent 60%) no-repeat,
+                        radial-gradient(circle 600px at 85% 20%, #333 0%, transparent 60%) no-repeat,
+                        radial-gradient(circle 700px at 40% 85%, #222 0%, transparent 60%) no-repeat;
+            opacity: 0.8;
             z-index: -2;
             animation: pulseBg 15s infinite ease-in-out alternate;
+            transition: opacity var(--transition-speed);
         }
 
         /* Efek garis-garis halus di latar belakang */
@@ -80,6 +84,7 @@
             z-index: -1;
             mask-image: radial-gradient(1200px 700px at 50% 40%, #000 0%, transparent 75%);
             opacity: 0.5;
+            transition: background var(--transition-speed);
         }
 
         /* === Gaya Header Halaman === */
@@ -93,14 +98,14 @@
 
         .section-header h1 {
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-size: clamp(2rem, 5vw, 3.5rem); 
             font-weight: 700;
             color: var(--accent-1);
             margin-bottom: 15px;
             position: relative;
             display: inline-block;
             transition: color var(--transition-speed);
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+            text-shadow: 2px 2px 5px var(--shadow-light);
         }
         
         .section-header h1::after {
@@ -117,21 +122,25 @@
             transition: background-color var(--transition-speed);
         }
 
-        /* REVISI: Mengubah margin dan font size untuk paragraf sub-judul */
         .section-header p {
             font-family: 'JetBrains Mono', monospace;
             font-size: clamp(0.9rem, 1.8vw, 1.1rem);
             color: var(--text-subtle);
             opacity: 0.9;
-            margin-top: 10px; /* Jarak atas dikecilkan */
+            margin-top: 20px;
             max-width: 700px;
             margin-left: auto;
             margin-right: auto;
             transition: color var(--transition-speed);
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-            line-height: 1.5; /* Memberikan sedikit spasi antar baris */
+            text-shadow: 1px 1px 3px var(--shadow-light);
+            line-height: 1.5;
         }
-        
+
+        /* Menghapus Tombol Tema Mode Gelap karena tema sudah fixed */
+        .theme-toggle-button {
+            display: none;
+        }
+
         /* === Gaya Container Galeri === */
         .gallery-container {
             display: flex;
@@ -144,14 +153,16 @@
             margin-bottom: 80px;
         }
 
-        /* === Gaya Kartu Utama (Main Card) === */
+        /* === Gaya Kartu Utama (Main Card) - Efek Glassmorphism === */
         .main-card {
-            background-color: var(--bg-card); /* Warna putih solid */
+            background-color: var(--bg-card);
             border-radius: var(--card-br);
             border: 1px solid var(--border-color);
-            box-shadow: 0 8px 20px var(--shadow-light);
+            box-shadow: 0 8px 32px 0 var(--shadow-heavy);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             overflow: hidden;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
             position: relative;
             max-width: 450px;
             width: 90%;
@@ -161,7 +172,8 @@
         
         .main-card:hover {
             border: 1px solid var(--accent-1);
-            box-shadow: 0 10px 25px rgba(8, 151, 139, 0.2);
+            box-shadow: 0 10px 30px rgba(8, 151, 139, 0.3);
+            transform: translateY(-5px);
         }
         
         .card-header {
@@ -196,7 +208,7 @@
         /* === Gaya Sub-Kartu Gambar (Image Sub-Card) === */
         .image-sub-card {
             flex: 1 1 150px;
-            background-color: var(--bg-card); /* Warna putih solid */
+            background-color: var(--bg-card);
             border-radius: var(--card-br);
             overflow: hidden;
             box-shadow: 0 2px 8px var(--shadow-light);
@@ -209,7 +221,7 @@
 
         .image-sub-card:hover {
             border: 1px solid var(--accent-1);
-            box-shadow: 0 4px 15px rgba(8, 151, 139, 0.2);
+            box-shadow: 0 4px 15px var(--accent-1);
         }
 
         .image-sub-card img {
@@ -228,7 +240,7 @@
             padding: 5px 12px;
             border: none;
             border-radius: 5px;
-            font-size: 0.85em;
+            font-size: 0.8em; /* Font size diubah */
             font-weight: 600;
             text-transform: uppercase;
             z-index: 10;
@@ -237,7 +249,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 35px;
+            height: 30px; /* Tinggi diubah */
         }
 
         .image-sub-card .label.before {
@@ -264,14 +276,14 @@
         }
 
         .prompt-button {
-            width: 35px;
-            height: 35px;
+            width: 30px; /* Lebar diubah */
+            height: 30px; /* Tinggi diubah */
             padding: 0;
             position: static;
         }
         
         .prompt-button i {
-            font-size: 1.1em;
+            font-size: 1.0em; /* Ukuran ikon diubah */
         }
         
         /* === Gaya Modal (Overlay) === */
@@ -300,8 +312,9 @@
 
         /* === Gaya Konten Modal Prompt === */
         .modal-content {
-            background-color: var(--bg-card); /* Warna putih solid */
-            border: 1px solid var(--border-color);
+            background-color: var(--bg-card); /* Warna transparan */
+            backdrop-filter: blur(15px); /* Efek blur untuk modal */
+            border: 1px solid var(--border-color); /* Border transparan */
             padding: 30px;
             border-radius: var(--card-br);
             max-width: 500px;
@@ -312,7 +325,7 @@
             max-height: 80vh;
             display: flex;
             flex-direction: column;
-            box-shadow: 0 8px 20px var(--shadow-light);
+            box-shadow: 0 8px 32px 0 var(--shadow-heavy);
         }
 
         .modal-overlay.active .modal-content {
@@ -326,11 +339,12 @@
             font-size: 1.5rem;
             color: var(--text-main);
             cursor: pointer;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.2s ease;
         }
 
         .modal-close:hover {
             color: var(--accent-2);
+            transform: rotate(90deg);
         }
 
         .modal-title {
@@ -378,7 +392,7 @@
         }
         
         .copy-button.copied {
-            background-color: #2ecc71;
+            background-color: #1a8075;
             color: white;
         }
 
@@ -399,8 +413,9 @@
             box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
             transform: scale(0.95);
             transition: transform 0.3s ease;
-            background-color: var(--bg-card); /* Warna putih solid */
-            border: 2px solid var(--border-color);
+            background-color: var(--bg-card); /* Warna transparan */
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--border-color); /* Border transparan */
             border-radius: var(--card-br);
             padding: 25px;
             display: flex;
@@ -509,7 +524,7 @@
                 font-size: 1.3em;
             }
             .modal-text {
-                font-size: 0.75em; /* Dikecilkan lagi untuk layar kecil */
+                font-size: 0.75em; 
             }
             .copy-button {
                 padding: 10px 15px;
@@ -700,16 +715,11 @@ memakai topi hitam, kaos putih, jaket hitam yang dibuka, jam tangan sebelah kiri
 foto dengan tampilan fresh, wajah berseri, ratio 9:16, dengan di potret menggunakan kamera profesional Canon EOS R5`
             },
 
-
-
-
-
-
         ];
 
         let currentPromptId = '';
         const copyButton = document.getElementById('copy-from-modal-button');
-        
+
         // Event listener untuk tombol salin
         copyButton.addEventListener('click', () => {
             copyPromptFromModal(currentPromptId);
@@ -825,4 +835,3 @@ foto dengan tampilan fresh, wajah berseri, ratio 9:16, dengan di potret mengguna
 </body>
 
 </html>
-
