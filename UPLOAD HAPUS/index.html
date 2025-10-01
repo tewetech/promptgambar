@@ -1,0 +1,958 @@
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/tewetech/promptgambar/refs/heads/main/favicon-promptgambar.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prompt Gambar Tewe Tech</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        /* ================================================= */
+        /* === Variabel dan Gaya Dasar === */
+        /* ================================================= */
+        :root {
+            /* Variabel untuk Mode Gelap (Dark Mode) */
+            --bg-primary: #121212; /* Latar belakang gelap */
+            --bg-card: rgba(255, 255, 255, 0.05); /* Latar belakang kartu transparan untuk efek glass gelap */
+            --text-main: #c9c9c9; /* Warna teks utama terang */
+            --text-subtle: #a0a0a0; /* Warna teks sekunder/samar terang */
+            --accent-1: #1a8075; /* Warna aksen utama (hijau tosca) yang lebih terang */
+            --accent-2: rgb(66, 66, 66); /* Warna aksen kedua (oranye) yang lebih terang */
+            --border-color: rgba(255, 255, 255, 0.1); /* Warna border transparan gelap */
+            --shadow-light: rgba(0, 0, 0, 0.3);
+            --shadow-heavy: rgba(0, 0, 0, 0.4);
+
+            /* Variabel tambahan dan properti dasar */
+            --card-br: 12px; /* Radius border untuk kartu */
+            --transition-speed: 0.5s;
+        }
+
+        /* Reset properti dasar untuk semua elemen */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Properti dasar body dan layout utama */
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            background-color: var(--bg-primary);
+            transition: background-color var(--transition-speed), color var(--transition-speed);
+        }
+
+        /* Efek latar belakang untuk mode gelap */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle 800px at 15% 15%, #222 0%, #121212 40%, transparent 60%) no-repeat,
+                        radial-gradient(circle 600px at 85% 20%, #333 0%, transparent 60%) no-repeat,
+                        radial-gradient(circle 700px at 40% 85%, #222 0%, transparent 60%) no-repeat;
+            opacity: 0.8;
+            z-index: -2;
+            animation: pulseBg 15s infinite ease-in-out alternate;
+            transition: opacity var(--transition-speed);
+        }
+
+        /* Efek garis-garis halus di latar belakang */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(to right, var(--border-color) 0 1px, transparent 1px 24px),
+                        repeating-linear-gradient(to bottom, var(--border-color) 0 1px, transparent 1px 24px);
+            z-index: -1;
+            mask-image: radial-gradient(1200px 700px at 50% 40%, #000 0%, transparent 75%);
+            opacity: 0.5;
+            transition: background var(--transition-speed);
+        }
+
+        /* === Gaya Header Halaman === */
+        .section-header {
+            text-align: center;
+            padding: 80px 20px;
+            max-width: 900px;
+            animation: fadeIn 1.2s ease-in-out;
+            transition: color var(--transition-speed);
+        }
+
+        .section-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 5vw, 3.5rem); 
+            font-weight: 700;
+            color: var(--accent-1);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+            transition: color var(--transition-speed);
+            text-shadow: 2px 2px 5px var(--shadow-light);
+        }
+        
+        .section-header h1::after {
+            content: '';
+            position: absolute;
+            left: 50%;
+            bottom: -15px;
+            width: 70px;
+            height: 4px;
+            background-color: var(--accent-2);
+            transform: translateX(-50%);
+            border-radius: 2px;
+            animation: expandLine 1.5s ease-out;
+            transition: background-color var(--transition-speed);
+        }
+
+        .section-header p {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+            color: var(--text-subtle);
+            opacity: 0.9;
+            margin-top: 20px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            transition: color var(--transition-speed);
+            text-shadow: 1px 1px 3px var(--shadow-light);
+            line-height: 1.5;
+        }
+
+        /* Menghapus Tombol Tema Mode Gelap karena tema sudah fixed */
+        .theme-toggle-button {
+            display: none;
+        }
+
+        /* === Gaya Container Galeri === */
+        .gallery-container {
+            display: flex;
+            flex-wrap: wrap; 
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            padding: 20px;
+            max-width: 1200px;
+            margin-bottom: 80px;
+        }
+
+        /* === Gaya Kartu Utama (Main Card) - Efek Glassmorphism === */
+        .main-card {
+            background-color: var(--bg-card);
+            border-radius: var(--card-br);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-heavy);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            overflow: hidden;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+            position: relative;
+            max-width: 450px;
+            width: 90%;
+            padding-bottom: 20px;
+            text-align: center;
+        }
+        
+        .main-card:hover {
+            border: 1px solid var(--accent-1);
+            box-shadow: 0 10px 30px rgba(8, 151, 139, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            padding: 0 20px;
+            flex-wrap: wrap;
+        }
+        
+        /* Ukuran font judul kartu */
+        .main-card-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em; 
+            font-weight: 700;
+            color: var(--text-main);
+            transition: color var(--transition-speed);
+        }
+
+        .image-pair-wrapper {
+            display: flex;
+            justify-content: space-around;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 20px;
+            flex-wrap: wrap;
+            position: relative;
+        }
+
+        /* === Gaya Sub-Kartu Gambar (Image Sub-Card) === */
+        .image-sub-card {
+            flex: 1 1 150px;
+            background-color: var(--bg-card);
+            border-radius: var(--card-br);
+            overflow: hidden;
+            box-shadow: 0 2px 8px var(--shadow-light);
+            position: relative;
+            height: 250px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-sub-card:hover {
+            border: 1px solid var(--accent-1);
+            box-shadow: 0 4px 15px var(--accent-1);
+        }
+
+        .image-sub-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .image-sub-card .label,
+        .prompt-button {
+            position: absolute;
+            bottom: 10px;
+            background-color: var(--accent-1);
+            color: #fff;
+            padding: 5px 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 0.8em; /* Font size diubah */
+            font-weight: 600;
+            text-transform: uppercase;
+            z-index: 10;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 30px; /* Tinggi diubah */
+        }
+
+        .image-sub-card .label.before {
+            left: 10px;
+        }
+
+        .after-and-prompt-buttons {
+            position: absolute;
+            bottom: 10px; 
+            right: 10px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .after-and-prompt-buttons .label.after {
+            position: static;
+            right: auto;
+        }
+        
+        .image-sub-card:hover .label,
+        .prompt-button:hover {
+            background-color: var(--accent-2);
+        }
+
+        .prompt-button {
+            width: 30px; /* Lebar diubah */
+            height: 30px; /* Tinggi diubah */
+            padding: 0;
+            position: static;
+        }
+        
+        .prompt-button i {
+            font-size: 1.0em; /* Ukuran ikon diubah */
+        }
+        
+        /* === Gaya Modal (Overlay) === */
+        .modal-overlay,
+        .image-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .modal-overlay.active,
+        .image-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* === Gaya Konten Modal Prompt === */
+        .modal-content {
+            background-color: var(--bg-card); /* Warna transparan */
+            backdrop-filter: blur(15px); /* Efek blur untuk modal */
+            border: 1px solid var(--border-color); /* Border transparan */
+            padding: 30px;
+            border-radius: var(--card-br);
+            max-width: 500px;
+            width: 90%;
+            position: relative; 
+            transform: scale(0.9);
+            transition: transform 0.3s ease, background-color var(--transition-speed);
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px 0 var(--shadow-heavy);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+        }
+
+        .modal-close:hover {
+            color: var(--accent-2);
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+        }
+
+        .modal-body {
+            flex-grow: 1;
+            overflow-y: auto;
+            margin-bottom: 20px;
+            padding-right: 10px;
+        }
+
+        /* Ukuran font deskripsi prompt */
+        .modal-text {
+            color: var(--text-main);
+            opacity: 0.9;
+            font-size: 0.8em; 
+            line-height: 1.6;
+            white-space: pre-wrap;
+            transition: color var(--transition-speed);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .copy-button {
+            background-color: var(--accent-2);
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            align-self: flex-start;
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .copy-button.copied {
+            background-color: #1a8075;
+            color: white;
+        }
+
+        .copy-button:hover {
+            background-color: #E55A29;
+            transform: translateY(-2px);
+        }
+        
+        .copy-button i {
+            font-size: 1.1em;
+        }
+        
+        /* === Gaya Konten Modal Gambar === */
+        .image-modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.2);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+            background-color: var(--bg-card); /* Warna transparan */
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--border-color); /* Border transparan */
+            border-radius: var(--card-br);
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .image-modal-title {
+            color: var(--text-main);
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            font-weight: 600;
+            text-align: center;
+        }
+        
+        .image-modal-image {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 8px;
+            object-fit: contain;
+        }
+        
+        .image-modal-overlay.active .image-modal-content {
+            transform: scale(1);
+        }
+
+        .image-modal-close {
+            position: absolute;
+            top: -15px;
+            right: -15px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.8);
+            color: var(--accent-2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            box-shadow: 0 4px 10px var(--shadow-light);
+            transition: transform 0.2s ease, background-color var(--transition-speed), color var(--transition-speed);
+        }
+        
+        .image-modal-close:hover {
+            transform: rotate(90deg);
+        }
+        
+        /* === Animasi === */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes expandLine {
+            from { width: 0; }
+            to { width: 70px; }
+        }
+        
+        @keyframes pulseBg {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.03); }
+            100% { transform: scale(1); }
+        }
+        
+        /* === Media Queries untuk responsivitas === */
+        @media (max-width: 992px) {
+            .gallery-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .card-header {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .section-header {
+                padding: 60px 15px;
+            }
+            .image-pair-wrapper {
+                flex-direction: column;
+                align-items: center;
+            }
+            .image-sub-card {
+                width: 90%;
+                flex: none;
+            }
+            .modal-content {
+                padding: 20px;
+                max-height: 70vh;
+            }
+            .after-and-prompt-buttons {
+                bottom: 10px;
+                right: 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-card {
+                padding-bottom: 15px;
+            }
+            .modal-title {
+                font-size: 1.3em;
+            }
+            .modal-text {
+                font-size: 0.75em; 
+            }
+            .copy-button {
+                padding: 10px 15px;
+                font-size: 0.8em;
+            }
+            .image-modal-content {
+                padding: 15px;
+            }
+            .image-modal-close {
+                top: -10px;
+                right: -10px;
+                width: 35px;
+                height: 35px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="section-header">
+        <h1>KUMPULAN PROMPT GAMBAR</h1>
+        <p>Tempat nongkrong mencari referensi prompt gambar. Tewe Tech Free Copyright.</p>
+    </header>
+
+    <div id="gallery-container" class="gallery-container">
+    </div>
+
+    <div id="prompt-modal" class="modal-overlay" onclick="closeModal(event, 'prompt-modal')">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal(null, 'prompt-modal')">&times;</span>
+            <h3 id="modal-title" class="modal-title"></h3>
+            
+            <div class="modal-body">
+                <p id="modal-text" class="modal-text"></p>
+            </div>
+
+            <button class="copy-button" id="copy-from-modal-button">
+                <i class="fas fa-copy"></i> Salin Prompt
+            </button>
+        </div>
+    </div>
+    
+    <div id="image-modal" class="image-modal-overlay" onclick="closeModal(event, 'image-modal')">
+        <div class="image-modal-content">
+            <span class="image-modal-close" onclick="closeModal(null, 'image-modal')">&times;</span>
+            <h4 id="image-modal-title" class="image-modal-title"></h4>
+            <img id="image-modal-image" src="" alt="Gambar Tampilan" class="image-modal-image">
+        </div>
+    </div>
+
+    <script>
+        // === Bagian JavaScript ===
+
+        // Array berisi data prompt
+        const prompts = [
+            {
+                id: 'prompt1',
+                title: 'Action Figure',
+                imageBefore: 'Data/Card1/Before.png',
+                imageAfter: 'Data/Card1/After.png',
+                text: `Buat figurin diri sendiri skala 1/8, dipajang di atas alas akrilik transparan.
+                
+Monitor menampilkan proses sculpting 3D, dengan kotak kemasan bergaya Hot Toys di sampingnya.`
+            },
+            {
+                id: 'Restorasi Foto',
+                title: 'Restorasi Foto',
+                imageBefore: 'Data/Card2/Before.png',
+                imageAfter: 'Data/Card2/After.png',
+                text: `Edit foto ini menjadi sebuah potret studio berkualitas sangat tinggi, setara dengan hasil jepretan kamera profesional Canon EOS R5.
+
+Fokus utama adalah menghasilkan gambar yang sangat tajam, jernih, bebas noise, dengan detail dan tekstur yang kaya pada kulit dan pakaian. Pastikan pencahayaan, warna, dan detail seimbang secara harmonis.
+
+Untuk subjek:
+* Komposisi: Pertahankan format  badan, dari bawah hingga atas semuanya terlihat jelas.
+* Wajah dan Pose: Sangat penting untuk mempertahankan bentuk wajah asli (mata, hidung, bibir, alis) serta pose dan arah pandangan dari foto sumber.
+* Kulit dan rambut: perbarui kulit dengan warna yang sama namun tampak mulus sehat dan bercahaya seperti baru dirawat. rambut berkilau.
+* Pakaian: Perbarui kualitas pakaian agar terlihat lebih premium, namun pertahankan model, potongan, dan warna yang sama atau sangat serupa dengan aslinya.
+* Pencahayaan: Ciptakan pencahayaan studio yang terang, lembut, dan merata dari arah depan (seperti beauty dish atau ring light). Pencahayaan ini harus menyoroti seluruh subjek tanpa menciptakan bayangan yang kasar atau gelap.
+* Kualitas Foto: hasilnya harus sangat detail dan super realistis.`
+            },
+
+	      {
+                id: 'Foto Wedding',
+                title: 'Foto Wedding',
+                imageBefore: 'Data/Card4/before.png',
+                imageAfter: 'Data/Card4/After.png',
+                text: `buatkan Sebuah bidikan jarak jauh yang elegan menangkap pasangan yang berbahagia di luar ruangan (gunakan kedua gambar yang di sediakan dengan tepat dengan akurat) pertahankan wajah dan rambutnya secara akurat. 
+dengan wanita di latar depan dan pria di belakangnya. Wanita itu, yang menoleh dengan senyum cerah, mengenakan gaun putih lengan panjang yang berkibar dan jilbab putih yang senada. 
+Gaunnya memiliki lipatan-lipatan halus dan menjuntai ke tanah, mengembang seolah-olah ia sedang berputar. Di latar belakang, 
+pria itu berjalan dengan langkah mantap, tatapannya tertuju pada wanita itu. 
+Ia mengenakan setelan hitam yang rapi dengan kemeja putih, dan jam tangan bergaya. Latarnya adalah lingkungan alam yang rimbun.
+Keduanya berdiri di tepi sungai yang hijau dan berumput di samping perairan tenang yang memantulkan langit dan pepohonan di sekitarnya.
+Latar belakangnya menampilkan deretan pepohonan yang rapat di tepi seberang, membentang di seluruh bingkai.
+Pencahayaannya lembut dan alami, menunjukkan suasana pagi atau sore hari, dengan langit mendung yang lembut.
+uasana keseluruhannya romantis dan tenteram, menekankan hubungan antara pasangan tersebut.`
+            },
+
+	      {
+                id: 'Foto Studio Cream',
+                title: 'Foto Studio Cream',
+                imageBefore: 'Data/Card5/Before.png',
+                imageAfter: 'Data/Card5/After.png',
+                text: `Edit foto ini menjadi sebuah potret studio berkualitas sangat tinggi, setara dengan hasil jepretan kamera profesional Canon EOS R5.
+
+Fokus utama adalah menghasilkan gambar yang sangat tajam, jernih, bebas noise, dengan detail dan tekstur yang kaya pada kulit dan pakaian. Pastikan pencahayaan, warna, dan detail seimbang secara harmonis.
+
+Untuk subjek:
+
+* Wajah: Sangat penting untuk mempertahankan bentuk wajah asli (mata, hidung, bibir, alis) serta pose dari foto sumber. jika menggunakan masker maka tetap pertahankan.
+
+WAJIB: Pastikan hasilnya menyatu secara realistis, pertahankan wajah
+
+tinggi badan 165 cm berat badan 45 kg, berdiri santai dengan latar belakang polos berwarna krem muda. tersenyum tipis dan melihat ke arah penonton. mengenakan kemeja putih lengan pendek kancing longgar, dimasukkan ke dalam celana pendek berwarna cokelat muda atau khaki. memakai kaus kaki putih dan sepatu slip-on berwarna terang. Tangannya di saku, dan dia sedikit bersandar ke satu sisi. Pencahayaan lembut dan merata.`
+            },
+            {
+                id: 'prompt3',
+                title: 'Foto Di Madinah',
+                imageBefore: 'Data/Card3/Before.png',
+                imageAfter: 'Data/Card3/After.png',
+                text: `realistis resolusi 1080p dengan gaya foto alami (gunakan gambar saya yang disediakan dengan tepat dan ubah pakaiannya mengunakan baju gamis warna putih), memakai syal, dan menyikut tas ransel warnah abu-abu strip hijau
+tambahkan jam tangan di kiri dan tangan kanan memegang botol air mineral. yang menampilkan ekspresi tersenyum. 
+Latar belakang Spot foto viral yang sedang populer di Madinah. pada saat malam. 
+Sudut kamera dari bawah. Pastikan hasilnya menyatu secara realistis, pertahankan wajah, dan pencahayaan dan bayangan konsisten.
+Gambar harus ultra-realistis, sangat detail, 4K HD mentah, fotorealistik, pencahayaan sinematik, rentang dinamis tinggi, dan tekstur yang nyata seperti aslinya.`
+            },
+	      {
+                id: 'Foto Fresh',
+                title: 'Foto fresh',
+                imageBefore: 'Data/Card6/Before.png',
+                imageAfter: 'Data/Card6/After.png',
+                text: `Edit foto ini menjadi sebuah potretberkualitas sangat tinggi, setara dengan hasil jepretan kamera profesional Canon EOS R5.
+
+Fokus utama adalah menghasilkan gambar yang sangat tajam, jernih, bebas noise, dengan detail dan tekstur yang kaya pada kulit dan pakaian. Pastikan pencahayaan, warna, dan detail seimbang secara harmonis. buatkan bagian wajah agar terlihat lebih berserii dan jernih.
+
+Untuk subjek:
+* Wajah: Sangat penting untuk mempertahankan bentuk wajah asli (mata, hidung, bibir, alis) foto saya.
+
+WAJIB: Pastikan hasilnya menyatu secara realistis, tetap pertahankan wajah. dan kacamata dan maskernya.
+
+tinggi badan 165 cm berat badan 45 kg, mengenakan kaos putih longgar dengan tulisan hitam di bagian depan, celana panjang hitam, dan jam tangan hitam di pergelangan tangannya. Posisinya santai, dengan satu tangan di saku dan tangan lainnya menyentuh rambutnya. Dia memiliki ekspresi ramah dengan senyum tipis. Latar belakangnya  tangga batu abu-abu dengan tanaman hijau yang rimbun di sampingnya dan bangunan modern di belakang. Pencahayaannya terang dan alami, menonjolkan fitur-fitur subjek dan memberikan kesan hangat secara keseluruhan. Gaya gambarnya harus realistis dan berkualitas tinggi, menyerupai fotografi editorial fashion. teteap pertahankan wajah asli.`
+            },	
+ 
+            {
+                id: 'Foto Studio Hitam',
+                title: 'Foto Studio Hitam',
+                imageBefore: 'Data/Card7/Before.png',
+                imageAfter: 'Data/Card7/After.png',
+                text: `Edit foto ini menjadi sebuah potret studio berkualitas sangat tinggi, setara dengan hasil jepretan kamera profesional Canon EOS R5.
+
+Untuk subjek:
+Wajah: Sangat penting untuk mempertahankan bentuk wajah asli (mata, hidung, bibir, alis) foto sumber. jika menggunakan masker maka tetap pertahankan.
+
+WAJIB:
+Pastikan hasilnya menyatu secara realistis, pertahankan wajah
+
+Detial Perintah: 
+Ubah foto wajah ini menjadi full body, menampilkan seseorang dengan tinggi 165 cm dan berat badan 45 kg, mempertahankan gaya dan pencahayaan dari foto wajah asli. Orang tersebut mengenakan pakaian jas hitam dan kaos putih, elana hitam, sepatu hitam. dan ekspresi wajah yang serupa. Latar belakang berwarna gelap solid.`
+            },
+
+            {
+                id: 'Foto Ditengah Kota',
+                title: 'Foto Ditengah Kota',
+                imageBefore: 'Data/Card8/Before.png',
+                imageAfter: 'Data/Card8/After.png',
+                text: `Ubah foto wajah ini menjadi full body, menampilkan seseorang dengan tinggi 165 cm dan berat badan 40 kg, dan berpose professional, tangan kanan dimasukan kedalam saku celana, background blur, efek sinar matahari backlight sejuk. tapi tetap menampilkan pencahaayaan yang sempurna dan menyatu, tetap tetap fokus dengan object, foto di di tengah tengah kota.
+
+pakaian:
+memakai topi hitam, kaos putih, jaket hitam yang dibuka, jam tangan sebelah kiri, celana panjang hitam, panjang celana diatas tumit sedikit, sepatu putih, pertahankan wajah, alis, mata, kacamata, masker,
+
+ 
+foto dengan tampilan fresh, wajah berseri, ratio 9:16, dengan di potret menggunakan kamera profesional Canon EOS R5`
+            },
+
+
+
+            {
+                id: 'Foto Di Gunung',
+                title: 'Foto Di Gunung',
+                imageBefore: 'Data/Card9/Before.png',
+                imageAfter: 'Data/Card9/After.png',
+                text: `Ubah foto wajah ini menjadi full body, menampilkan seseorang dengan tinggi 165 cm dan berat badan 40 kg, dan berpose professional badan mengadap sedikit kesamping kiri dan muka menghadap ke kamera, badan tegap penuh semangat. tangan kanan memegang tongkat untuk mendaki, background blur, efek sinar matahari backlight sejuk tidak over. tapi tetap menampilkan pencahaayaan yang sempurna soft dan menyatu, object tetap jelas dan detail, foto di gunung dengan pemandangan yang indah.
+
+pakaian:
+memakai topi hitam, kaos putih, jaket hitam yang dibuka, jam tangan sebelah kiri, celana panjang hitam, sepatu gunung warna putih, menggunakan ransel gunung beserta isi2nya. pertahankan wajah, alis, mata, kacamata, masker,
+
+ 
+foto dengan tampilan fresh, wajah berseri, ratio 9:16, dengan di potret menggunakan kamera profesional Canon EOS R5`
+            },
+
+            {
+                id: 'Foto Stasiun Jepang',
+                title: 'Foto Stasiun Jepang',
+                imageBefore: 'Data/Card10/Before.png',
+                imageAfter: 'Data/Card10/After.png',
+                text: `Ubah foto wajah ini menjadi full body, menampilkan seseorang dengan tinggi 165 cm dan berat badan 40 kg. background blur, efek sinar matahari backlight sejuk. tapi tetap menampilkan pencahaayaan yang sempurna dan menyatu, tetap tetap fokus dengan object.
+
+Pose dan Pakaian:
+memakai kaos putih, jam tangan hitam sebelah kiri, celana panjang hitam, panjang celana diatas tumit sedikit, memakai sepatu olahraga putih, dan ransel dipakai dengan satu tangan.
+pertahankan rambut, wajah, alis, mata, kacamata, masker,  dengan badan menghadap ke arah datangnya kereta dengan posisi santai. 
+
+Suasana dan Pencahayaan:
+posisinya berdiri di peron samping kereta. Pemandangan stasiun kereta api di Jepang dengan latar belakang pegunungan. Langit terlihat cerah dengan sedikit kabut, menciptakan suasana pagi yang tenang dan sejuk.
+
+Pencahayaan lembut dan alami, dengan cahaya matahari yang menyinari dari arah kanan, menonjolkan detail pohon sakura yang sedang mekar di atas peron. Warna-warna yang dominan adalah hijau dari pepohonan, cokelat dari bangunan kayu stasiun, dan biru cerah dari kereta yang mendekat.
+
+Detail Pelengkap:
+"Realistic, cinematic photography, depth of field, natural lighting, high-resolution, professional photo, detailed, tranquil atmosphere. foto dengan tampilan fresh, wajah berseri, ratio 9:16, dengan di potret menggunakan kamera profesional Canon EOS R5"`
+            },
+
+            {
+                id: 'Foto Di Tangga',
+                title: 'Foto Di Tangga',
+                imageBefore: 'Data/Card11/Before.png',
+                imageAfter: 'Data/Card11/After.png',
+                text: `Rubah muka saya menjadi:
+
+Suasana:
+Sebuah tangga beton bergaya Brutalis yang mengarah ke langit biru yang berawan. Sebuah tiang lampu tunggal berdiri di puncaknya, dan dinding ubin yang reflektif membentang di sisi kiri. Cahayanya menyebar, memberikan pemandangan nuansa lembut, hampir nostalgia.
+Foto lanskap perkotaan yang menangkap tangga batu panjang dan kosong dengan latar belakang langit biru cerah dengan awan dramatis yang berserakan. Sebuah pegangan tangan logam modern mengikuti tangga, dan dinding di sekitarnya ditutupi dengan ubin berwarna krem yang mengilap. dan background sedikit bokeh.
+
+Objek Orang:
+Seorang pria muda Asia.
+
+Pose:
+pertahankan wajah dan masker.
+rambut disisir kearah kanan.
+Duduk di tangga.
+Terdapat kesan tenang dan santai.
+
+Pakaian:
+menggunakan jam tangan hitam sebelah kiri.
+Kaos polos berwarna putih.
+Celana panjang berwarna hitam.
+Sepatu kets berwarna putih.
+Gaya pakaiannya santai dan kasual.
+
+Ukuran Foto:
+Potrait 4:9 Dengan Kualtias foto menggunakan kamera Dslr.`
+            },
+
+            {
+                id: 'Foto Di Cafe',
+                title: 'Foto Di Cafe',
+                imageBefore: 'Data/Card12/Before.png',
+                imageAfter: 'Data/Card12/After.png',
+                text: `Rubah muka saya menjadi:
+
+Suasana:
+pengambilan gambar object nya di tengah2.
+Minimalis dan tenang: Desainnya sederhana dengan warna netral.
+Alam dan modern: Memadukan unsur alam (pohon, batu, tanaman) dengan arsitektur modern (beton, garis lurus).
+Luar ruangan: Sebuah halaman belakang atau teras yang berfungsi sebagai kafe.
+Pencahayaan: Cahaya matahari alami yang menyusup di sela-sela dedaunan, menciptakan efek teduh. dan background sedikit bokeh.
+
+Objek Orang:
+Seorang pria muda Asia.
+
+Pose:
+pertahankan wajah dan masker.
+rambut disisir kearah kanan.
+Duduk di bangku bar.
+Tubuhnya membungkuk sedikit ke depan.
+Tangannya berada di atas meja, sedang menggunakan laptop.
+pandangannya fokus dengan laptop.
+ada secangkir kopi dan makanan ringan serta handphone hitam.
+Terdapat kesan tenang dan santai.
+
+Pakaian:
+menggunakan jam tangan hitam sebelah kiri.
+Kaos polos berwarna putih.
+Celana panjang berwarna hitam.
+Sepatu kets berwarna putih.
+Gaya pakaiannya santai dan kasual.`
+            },
+
+            {
+                id: 'Foto Basket',
+                title: 'Foto Basket',
+                imageBefore: 'Data/Card13/Before.png',
+                imageAfter: 'Data/Card13/After.png',
+                text: `Rubah muka saya menjadi:
+
+Suasana:
+Foto aksi hitam putih dan abu-abu seorang pemain basket pria yang mendribel bola di lapangan, dengan desain abstrak geometris yang tajam dan kontras di latar belakang. Atmosfernya intens, dinamis, dan bergaya.
+
+Objek Orang:
+Seorang pria muda Asia. tinggi 165 cm berat badan 40 kg. fokus dan bertekad.
+
+Pose:
+pertahankan wajah.
+Dalam posisi mendribel, dengan bola di tangan dan satu kaki di depan, seolah sedang berlari atau mengubah arah. Gerakannya terlihat alami dan kuat.
+
+Pakaian:
+Mengenakan celana pendek basket, kaus tanpa lengan, dan sepatu basket dengan merek yang terlihat.`
+            },
+
+            {
+                id: 'Studio Pas FOTO',
+                title: 'Studio Pas FOTO',
+                imageBefore: 'Data/Card14/Before.png',
+                imageAfter: 'Data/Card14/After.png',
+                text: `buatkan dari gambar saya menjadi Foto paspor pria muda dengan jas hitam atau biru tua, kemeja putih, dan dasi abu-abu. Rambut pendek rapi. Senyum elegan dengan mulut tertutup, pandangan lurus ke depan. Latar belakang MERAH solid tanpa bayangan. Pencahayaan studio profesional yang rapi dan detail. Serta object detail tanpa ada efek blur ataupun noise.
+
+tanpa mengubah wajah asli.`
+            },
+
+
+
+
+        ];
+
+        let currentPromptId = '';
+        const copyButton = document.getElementById('copy-from-modal-button');
+
+        // Event listener untuk tombol salin
+        copyButton.addEventListener('click', () => {
+            copyPromptFromModal(currentPromptId);
+        });
+
+        // Event listener saat DOM selesai dimuat
+        document.addEventListener('DOMContentLoaded', () => {
+            createGalleryCards();
+        });
+
+        // Fungsi untuk membuat kartu galeri dari data prompts
+        function createGalleryCards() {
+            const galleryContainer = document.getElementById('gallery-container');
+            
+            prompts.forEach(prompt => {
+                const card = document.createElement('div');
+                card.classList.add('main-card');
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="main-card-title">${prompt.title}</h3>
+                    </div>
+                    <div class="image-pair-wrapper">
+                        <div class="image-sub-card" onclick="showImageModal('${prompt.imageBefore}', '${prompt.title} (Before)')">
+                            <img src="${prompt.imageBefore}" alt="Sebelum ${prompt.title}">
+                            <div class="label before">
+                                <span>Before</span>
+                            </div>
+                        </div>
+                        <div class="image-sub-card" onclick="showImageModal('${prompt.imageAfter}', '${prompt.title} (After)')">
+                            <img src="${prompt.imageAfter}" alt="Sesudah ${prompt.title}">
+                            <div class="after-and-prompt-buttons">
+                                <div class="label after">
+                                    <span>After</span>
+                                </div>
+                                <button class="prompt-button" onclick="event.stopPropagation(); showPromptModal('${prompt.id}')">
+                                    <i class="fas fa-magic"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                galleryContainer.appendChild(card);
+            });
+        }
+        
+        // Fungsi untuk menampilkan modal prompt
+        function showPromptModal(id) {
+            const modal = document.getElementById('prompt-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalText = document.getElementById('modal-text');
+
+            const currentData = prompts.find(p => p.id === id);
+
+            if (currentData) {
+                modalTitle.textContent = currentData.title;
+                modalText.innerHTML = currentData.text.replace(/\n/g, '<br>');
+                modal.classList.add('active');
+                currentPromptId = id;
+            }
+        }
+        
+        // Fungsi untuk menampilkan modal gambar
+        function showImageModal(imageUrl, title) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('image-modal-image');
+            const modalTitle = document.getElementById('image-modal-title');
+            
+            modalImage.src = imageUrl;
+            modalTitle.textContent = title;
+            modal.classList.add('active');
+        }
+
+        // Fungsi untuk menutup modal
+        function closeModal(event, modalId) {
+            const modal = document.getElementById(modalId);
+            // Hanya tutup modal jika klik berada di luar konten modal
+            if (event && (event.target.closest('.modal-content') || event.target.closest('.image-modal-content'))) {
+                 return;
+            }
+            modal.classList.remove('active');
+        }
+
+        // Fungsi untuk menyalin teks prompt ke clipboard
+        function copyPromptFromModal(id) {
+            const dataToCopy = prompts.find(p => p.id === id);
+
+            if (!dataToCopy) {
+                console.error('Data prompt tidak ditemukan untuk ID:', id);
+                return;
+            }
+
+            const promptText = dataToCopy.text.trim();
+
+            navigator.clipboard.writeText(promptText)
+                .then(() => {
+                    copyButton.textContent = "Berhasil Disalin!";
+                    copyButton.classList.add('copied');
+                    
+                    // Kembalikan teks tombol setelah 2 detik
+                    setTimeout(() => {
+                        copyButton.innerHTML = `<i class="fas fa-copy"></i> Salin Prompt`;
+                        copyButton.classList.remove('copied');
+                    }, 2000);
+                })
+                .catch(err => {
+                    console.error('Gagal menyalin prompt:', err);
+                    alert('Gagal menyalin prompt. Silakan salin secara manual: \n' + promptText);
+                });
+        }
+    </script>
+</body>
+
+</html>
